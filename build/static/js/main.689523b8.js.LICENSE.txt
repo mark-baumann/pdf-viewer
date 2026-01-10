@@ -4,6 +4,13 @@ object-assign
 @license MIT
 */
 
+/*!
+ * Determine if an object is a Buffer
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
 /**
  * @licstart The following is the entire license notice for the
  * Javascript code in this page

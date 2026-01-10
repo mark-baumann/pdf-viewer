@@ -22,10 +22,6 @@ export default async function handler(
           }),
         };
       },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // Get notified of client upload completion
-        console.log('blob upload completed', blob, tokenPayload);
-      },
     });
  
     return response.status(200).json(jsonResponse);

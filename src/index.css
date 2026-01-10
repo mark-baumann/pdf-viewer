@@ -178,6 +178,7 @@ body {
   height: 100vh;
   background-color: #e5e5e5;
   overflow: hidden; /* Prevent body scroll during swipe */
+  position: relative; /* Ensure children positioning works */
 }
 
 .viewer-header, .viewer-controls {
@@ -194,6 +195,11 @@ body {
   border-bottom: 1px solid rgba(0,0,0,0.1);
   box-shadow: var(--shadow-sm);
   z-index: 10;
+  /* Fix: Make it absolute so it overlays the content */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .viewer-header.hidden {
@@ -255,9 +261,12 @@ body {
   overflow: auto;
   display: flex;
   justify-content: center;
-  padding: 40px;
+  /* Fix: Reduced padding since header is now absolute */
+  padding: 80px 40px 40px 40px; 
   /* Make click area better */
   min-height: 0; 
+  /* Ensure it takes full height */
+  height: 100%;
 }
 
 /* React-PDF Specific Overrides */

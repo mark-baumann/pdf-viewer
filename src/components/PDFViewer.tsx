@@ -16,6 +16,7 @@ const PDFViewer: React.FC = () => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
   
   // 1. Load Zoom from localStorage or default to 1.0
   const [scale, setScale] = useState(() => {
@@ -25,7 +26,6 @@ const PDFViewer: React.FC = () => {
 
   const [controlsVisible, setControlsVisible] = useState(true);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const touchStartRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!file) {
@@ -39,7 +39,7 @@ const PDFViewer: React.FC = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange); // iOS/Safari
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange); // Safari
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
@@ -67,33 +67,29 @@ const PDFViewer: React.FC = () => {
     resetControlsTimer();
   }, [numPages]);
 
-  // Toggle Fullscreen - Enhanced for iOS
+  // Toggle Fullscreen (Standard API only, no fallback)
   const toggleFullscreen = () => {
     const elem = containerRef.current as any;
     const doc = document as any;
 
     if (!isFullscreen) {
-      // Try native fullscreen first
       if (elem.requestFullscreen) {
-        elem.requestFullscreen().catch((err: any) => {
-          console.warn('Native fullscreen failed, using CSS fallback', err);
-          setIsFullscreen(true); // Fallback to CSS fullscreen
-        });
+        elem.requestFullscreen().catch((err: any) => console.log(err));
       } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen(); // Safari/iOS (if supported)
-      } else {
-        // Fallback for iOS which often doesn't support element fullscreen
-        setIsFullscreen(true);
+        elem.webkitRequestFullscreen();
       }
     } else {
       if (doc.exitFullscreen) {
-        doc.exitFullscreen().catch(() => setIsFullscreen(false));
+        doc.exitFullscreen();
       } else if (doc.webkitExitFullscreen) {
         doc.webkitExitFullscreen();
-      } else {
-        setIsFullscreen(false);
       }
     }
+    resetControlsTimer();
+  };
+
+  const toggleScrollLock = () => {
+    setIsScrollLocked(prev => !prev);
     resetControlsTimer();
   };
 
@@ -107,28 +103,6 @@ const PDFViewer: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [changePage]);
-
-  // 3. Swipe Navigation Logic
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartRef.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartRef.current === null) return;
-    
-    const touchEnd = e.changedTouches[0].clientX;
-    const diff = touchStartRef.current - touchEnd;
-
-    // Swipe Threshold: 50px
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        changePage(1); // Swipe Left -> Next Page
-      } else {
-        changePage(-1); // Swipe Right -> Prev Page
-      }
-    }
-    touchStartRef.current = null;
-  };
 
   // 2. Auto-hide Controls Logic
   const showControls = () => {
@@ -175,9 +149,7 @@ const PDFViewer: React.FC = () => {
   return (
     <div 
       ref={containerRef}
-      className={`viewer-container ${isFullscreen ? 'fullscreen-fallback' : ''}`}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      className="viewer-container"
     >
       <div className={`viewer-header ${controlsVisible ? 'visible' : 'hidden'}`}>
         <button className="btn-back" onClick={() => navigate('/')}>
@@ -189,6 +161,14 @@ const PDFViewer: React.FC = () => {
         <div className="viewer-actions">
            <button 
              className="btn-icon-nav"
+             onClick={toggleScrollLock}
+             title={isScrollLocked ? "Unlock Scroll" : "Lock Scroll"}
+             style={{ marginRight: '8px' }}
+           >
+             {isScrollLocked ? '🔒' : '🔓'}
+           </button>
+           <button 
+             className="btn-icon-nav"
              onClick={toggleFullscreen}
              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
            >
@@ -198,7 +178,7 @@ const PDFViewer: React.FC = () => {
       </div>
 
       <div 
-        className="document-wrapper" 
+        className={`document-wrapper ${isScrollLocked ? 'scroll-locked' : ''}`}
         onClick={toggleControls}
       >
         <Document

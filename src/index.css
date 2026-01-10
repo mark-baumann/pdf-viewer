@@ -457,14 +457,14 @@ body {
 /* Mobile Adjustments */
 @media (max-width: 480px) {
   .viewer-controls {
-    width: 90%;
-    bottom: 20px;
+    width: 100%;
+    bottom: auto;
   }
-  
+
   .tool-label {
     display: none; /* Hide labels on very small screens, show icons only */
   }
-  
+
   .btn-tool {
     padding: 8px 16px; /* Larger touch targets */
   }

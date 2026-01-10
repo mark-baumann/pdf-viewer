@@ -11,8 +11,11 @@ const PDFViewer: React.FC = () => {
   const file = location.state?.file;
   const fileName = location.state?.name || 'Document';
   
+  const containerRef = useRef<HTMLDivElement>(null);
+  
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   // 1. Load Zoom from localStorage or default to 1.0
   const [scale, setScale] = useState(() => {
@@ -29,6 +32,15 @@ const PDFViewer: React.FC = () => {
       navigate('/');
     }
   }, [file, navigate]);
+
+  // Handle Fullscreen Change Events
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   // Helper to save zoom
   const updateScale = (newScale: number) => {
@@ -50,6 +62,18 @@ const PDFViewer: React.FC = () => {
     });
     resetControlsTimer();
   }, [numPages]);
+
+  // Toggle Fullscreen
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+    resetControlsTimer();
+  };
 
   // 3. Keyboard Navigation
   useEffect(() => {
@@ -128,6 +152,7 @@ const PDFViewer: React.FC = () => {
 
   return (
     <div 
+      ref={containerRef}
       className="viewer-container"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -139,7 +164,15 @@ const PDFViewer: React.FC = () => {
         <div className="viewer-title">
            {fileName}
         </div>
-        <div className="viewer-actions"></div>
+        <div className="viewer-actions">
+           <button 
+             className="btn-icon-nav"
+             onClick={toggleFullscreen}
+             title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+           >
+             {isFullscreen ? '↙' : '↗'}
+           </button>
+        </div>
       </div>
 
       <div 

@@ -224,8 +224,31 @@ body {
 }
 
 .viewer-actions {
-  width: 100px; /* Balance spacing */
+  width: 100px;
+  display: flex;
+  justify-content: flex-end; /* Align icon to the right */
 }
+
+.btn-icon-nav {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.btn-icon-nav:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
 
 .document-wrapper {
   flex: 1;

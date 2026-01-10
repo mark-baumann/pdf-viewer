@@ -76,6 +76,12 @@ body {
   transform: translateY(1px);
 }
 
+.btn-upload.disabled {
+  background-color: #a0a0a5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .empty-state {
   display: flex;
   flex-direction: column;

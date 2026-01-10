@@ -1,11 +1,11 @@
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export const config = {
-  runtime: 'edge',
-};
-
-export default async function handler(request: Request) {
-  const body = (await request.json()) as HandleUploadBody;
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponse,
+) {
+  const body = request.body as HandleUploadBody;
  
   try {
     const jsonResponse = await handleUpload({
@@ -28,13 +28,8 @@ export default async function handler(request: Request) {
       },
     });
  
-    return new Response(JSON.stringify(jsonResponse));
+    return response.status(200).json(jsonResponse);
   } catch (error) {
-    return new Response(
-      JSON.stringify(
-        { error: (error as Error).message },
-      ),
-      { status: 400 },
-    );
+    return response.status(400).json({ error: (error as Error).message });
   }
 }

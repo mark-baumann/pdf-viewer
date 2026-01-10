@@ -475,18 +475,69 @@ body {
   color: var(--text-secondary);
 }
 
-/* Mobile Adjustments */
-@media (max-width: 480px) {
+/* Mobile Adjustments - Fixed Taskbar */
+@media (max-width: 600px) {
   .viewer-controls {
+    padding: 8px 4px;
     width: 100%;
     bottom: auto;
   }
 
-  .tool-label {
-    display: none; /* Hide labels on very small screens, show icons only */
+  .toolbar {
+    gap: 4px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
   }
 
+  .toolbar-section.left,
+  .toolbar-section.right,
+  .toolbar-section.center {
+    order: unset;
+  }
+  
+  .toolbar-section.center {
+    width: auto;
+    justify-content: center;
+    gap: 4px;
+    padding-top: 0;
+    border-top: none;
+    margin-top: 0;
+    flex: 1;
+  }
+  
+  .toolbar-section.right {
+    gap: 2px;
+  }
+
+  .page-info, .zoom-level {
+    font-size: 12px;
+    min-width: auto;
+    margin: 0 2px;
+    padding: 0;
+  }
+  
+  .vertical-divider {
+    display: none;
+  }
+  
+  .btn-icon, .btn-icon.small {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+  
   .btn-tool {
-    padding: 8px 16px; /* Larger touch targets */
+    padding: 4px !important;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .tool-label {
+    display: none;
+  }
+  
+  .control-group {
+    gap: 2px;
   }
 }

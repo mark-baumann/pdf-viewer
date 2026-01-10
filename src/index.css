@@ -34,18 +34,74 @@ body {
 
 .header {
   margin-bottom: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .header h1 {
   font-size: 32px;
   font-weight: 700;
-  margin: 0 0 8px 0;
+  margin: 0;
   letter-spacing: -0.5px;
 }
 
 .subtitle {
   color: var(--text-secondary);
   font-size: 16px;
+  margin: 0;
+}
+
+/* Upload & Empty State */
+.btn-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-upload:hover {
+  background-color: #0062cc;
+  transform: translateY(-1px);
+}
+
+.btn-upload:active {
+  transform: translateY(1px);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px dashed #d1d1d6;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.empty-state h2 {
+  font-size: 20px;
+  margin: 0 0 8px 0;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  color: var(--text-secondary);
   margin: 0;
 }
 

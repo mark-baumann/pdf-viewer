@@ -164,7 +164,7 @@ const PDFViewer: React.FC = () => {
                onClick={toggleFullscreen}
                title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
              >
-               {isFullscreen ? '↙' : '↗'}
+               {isFullscreen ? '↙️' : '↗️'}
              </button>
           </div>
         </div>

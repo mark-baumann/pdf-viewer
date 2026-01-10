@@ -336,7 +336,7 @@ body {
 /* Mobile Adjustments */
 @media (max-width: 600px) {
   .viewer-controls {
-    padding: 8px 12px;
+    padding: 8px 16px;
   }
   
   .toolbar-section.right {

@@ -23,9 +23,6 @@ const PDFViewer: React.FC = () => {
     return savedScale ? parseFloat(savedScale) : 1.0;
   });
 
-  const [controlsVisible, setControlsVisible] = useState(true);
-  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   useEffect(() => {
     if (!file) {
       navigate('/');
@@ -50,7 +47,6 @@ const PDFViewer: React.FC = () => {
     const clamped = Math.min(Math.max(newScale, 0.5), 3.0);
     setScale(clamped);
     localStorage.setItem('pdf-viewer-zoom', clamped.toString());
-    resetControlsTimer();
   };
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
@@ -63,7 +59,6 @@ const PDFViewer: React.FC = () => {
       if (numPages && (newPage < 1 || newPage > numPages)) return prev;
       return newPage;
     });
-    resetControlsTimer();
   }, [numPages]);
 
   // Toggle Fullscreen
@@ -84,12 +79,10 @@ const PDFViewer: React.FC = () => {
         doc.webkitExitFullscreen();
       }
     }
-    resetControlsTimer();
   };
 
   const toggleScrollLock = () => {
     setIsScrollLocked(prev => !prev);
-    resetControlsTimer();
   };
 
   // 3. Keyboard Navigation
@@ -103,42 +96,6 @@ const PDFViewer: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [changePage]);
 
-  // 2. Auto-hide Controls Logic
-  const showControls = () => {
-    setControlsVisible(true);
-    resetControlsTimer();
-  };
-
-  const hideControls = () => {
-    setControlsVisible(false);
-  };
-
-  const resetControlsTimer = () => {
-    if (controlsTimeoutRef.current) {
-      clearTimeout(controlsTimeoutRef.current);
-    }
-    // Auto-hide after 3 seconds of inactivity
-    controlsTimeoutRef.current = setTimeout(() => {
-      setControlsVisible(false);
-    }, 3000);
-  };
-
-  const toggleControls = () => {
-    if (controlsVisible) {
-      hideControls();
-    } else {
-      showControls();
-    }
-  };
-
-  // Setup initial timer on mount
-  useEffect(() => {
-    resetControlsTimer();
-    return () => {
-      if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
-    };
-  }, []);
-
 
   const zoomIn = () => updateScale(scale + 0.1);
   const zoomOut = () => updateScale(scale - 0.1);
@@ -150,9 +107,71 @@ const PDFViewer: React.FC = () => {
       ref={containerRef}
       className="viewer-container"
     >
+      <div className="viewer-controls">
+        <div className="toolbar">
+          {/* Left: Back */}
+          <div className="toolbar-section left">
+            <button className="btn-icon" onClick={() => navigate('/')} title="Back">
+              ←
+            </button>
+          </div>
+
+          {/* Center: Navigation & Zoom */}
+          <div className="toolbar-section center">
+            <div className="control-group">
+              <button
+                type="button"
+                disabled={pageNumber <= 1}
+                onClick={() => changePage(-1)}
+                className="btn-nav"
+              >
+                ←
+              </button>
+              <span className="page-info">
+                {pageNumber} / {numPages || '--'}
+              </span>
+              <button
+                type="button"
+                disabled={pageNumber >= (numPages || 0)}
+                onClick={() => changePage(1)}
+                className="btn-nav"
+              >
+                →
+              </button>
+            </div>
+
+            <div className="vertical-divider"></div>
+
+            <div className="control-group">
+              <button onClick={zoomOut} className="btn-icon small">-</button>
+              <span className="zoom-level">{Math.round(scale * 100)}%</span>
+              <button onClick={zoomIn} className="btn-icon small">+</button>
+            </div>
+          </div>
+
+          {/* Right: Tools */}
+          <div className="toolbar-section right">
+            <button 
+               className={`btn-icon tool ${isScrollLocked ? 'active' : ''}`}
+               onClick={toggleScrollLock}
+               title={isScrollLocked ? 'Unlock Scroll' : 'Lock Scroll'}
+             >
+               {isScrollLocked ? '🔒' : '🔓'}
+             </button>
+             
+             <button 
+               className="btn-icon tool"
+               onClick={toggleFullscreen}
+               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+             >
+               {isFullscreen ? '↙' : '↗'}
+             </button>
+          </div>
+        </div>
+      </div>
+
       <div 
         className={`document-wrapper ${isScrollLocked ? 'scroll-locked' : ''}`}
-        onClick={toggleControls}
       >
         <Document
           file={file}
@@ -168,73 +187,6 @@ const PDFViewer: React.FC = () => {
             className="pdf-page"
           />
         </Document>
-      </div>
-
-      <div 
-        className={`viewer-controls ${controlsVisible ? 'visible' : 'hidden'}`}
-        // Stop clicks on controls from toggling visibility
-        onClick={(e) => { e.stopPropagation(); resetControlsTimer(); }}
-      >
-        {/* Row 1: Navigation & Zoom */}
-        <div className="controls-row primary-row">
-          <button className="btn-icon" onClick={() => navigate('/')} title="Back">
-            ←
-          </button>
-          
-          <div className="vertical-divider"></div>
-
-          <div className="control-group">
-            <button
-              type="button"
-              disabled={pageNumber <= 1}
-              onClick={() => changePage(-1)}
-              className="btn-nav"
-            >
-              ←
-            </button>
-            <span className="page-info">
-              {pageNumber} / {numPages || '--'}
-            </span>
-            <button
-              type="button"
-              disabled={pageNumber >= (numPages || 0)}
-              onClick={() => changePage(1)}
-              className="btn-nav"
-            >
-              →
-            </button>
-          </div>
-
-          <div className="vertical-divider"></div>
-
-          <div className="control-group">
-            <button onClick={zoomOut} className="btn-icon small">-</button>
-            <span className="zoom-level">{Math.round(scale * 100)}%</span>
-            <button onClick={zoomIn} className="btn-icon small">+</button>
-          </div>
-        </div>
-
-        {/* Row 2: Tools (Lock & Fullscreen) */}
-        <div className="controls-row secondary-row">
-           <button 
-             className={`btn-tool ${isScrollLocked ? 'active' : ''}`}
-             onClick={toggleScrollLock}
-           >
-             <span className="tool-icon">{isScrollLocked ? '🔒' : '🔓'}</span>
-             <span className="tool-label">{isScrollLocked ? 'Unlock Scroll' : 'Lock Scroll'}</span>
-           </button>
-           
-           <div className="vertical-divider"></div>
-
-           <button 
-             className="btn-tool"
-             onClick={toggleFullscreen}
-           >
-             <span className="tool-icon">{isFullscreen ? '↙' : '↗'}</span>
-             <span className="tool-label">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
-           </button>
-        </div>
-
       </div>
     </div>
   );

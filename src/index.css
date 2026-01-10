@@ -177,6 +177,11 @@ body {
   flex-direction: column;
   height: 100vh;
   background-color: #e5e5e5;
+  overflow: hidden; /* Prevent body scroll during swipe */
+}
+
+.viewer-header, .viewer-controls {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .viewer-header {
@@ -189,6 +194,12 @@ body {
   border-bottom: 1px solid rgba(0,0,0,0.1);
   box-shadow: var(--shadow-sm);
   z-index: 10;
+}
+
+.viewer-header.hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
 }
 
 .btn-back {
@@ -222,6 +233,8 @@ body {
   display: flex;
   justify-content: center;
   padding: 40px;
+  /* Make click area better */
+  min-height: 0; 
 }
 
 /* React-PDF Specific Overrides */
@@ -253,6 +266,12 @@ body {
   gap: 24px;
   z-index: 20;
   border: 1px solid rgba(0,0,0,0.05);
+}
+
+.viewer-controls.hidden {
+  opacity: 0;
+  transform: translate(-50%, 20px); /* Move down slightly */
+  pointer-events: none;
 }
 
 .control-group {

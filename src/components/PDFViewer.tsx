@@ -150,8 +150,6 @@ const PDFViewer: React.FC = () => {
       ref={containerRef}
       className="viewer-container"
     >
-      {/* Header removed as requested */}
-
       <div 
         className={`document-wrapper ${isScrollLocked ? 'scroll-locked' : ''}`}
         onClick={toggleControls}
@@ -177,63 +175,63 @@ const PDFViewer: React.FC = () => {
         // Stop clicks on controls from toggling visibility
         onClick={(e) => { e.stopPropagation(); resetControlsTimer(); }}
       >
-        {/* Back Button */}
-        <button className="btn-icon" onClick={() => navigate('/')} title="Back">
-          ←
-        </button>
-
-        <div className="control-divider"></div>
-
-        {/* Navigation */}
-        <div className="control-group">
-          <button
-            type="button"
-            disabled={pageNumber <= 1}
-            onClick={() => changePage(-1)}
-            className="btn-nav"
-          >
+        {/* Row 1: Navigation & Zoom */}
+        <div className="controls-row primary-row">
+          <button className="btn-icon" onClick={() => navigate('/')} title="Back">
             ←
           </button>
-          <span className="page-info">
-            {pageNumber} / {numPages || '--'}
-          </span>
-          <button
-            type="button"
-            disabled={pageNumber >= (numPages || 0)}
-            onClick={() => changePage(1)}
-            className="btn-nav"
-          >
-            →
-          </button>
+          
+          <div className="vertical-divider"></div>
+
+          <div className="control-group">
+            <button
+              type="button"
+              disabled={pageNumber <= 1}
+              onClick={() => changePage(-1)}
+              className="btn-nav"
+            >
+              ←
+            </button>
+            <span className="page-info">
+              {pageNumber} / {numPages || '--'}
+            </span>
+            <button
+              type="button"
+              disabled={pageNumber >= (numPages || 0)}
+              onClick={() => changePage(1)}
+              className="btn-nav"
+            >
+              →
+            </button>
+          </div>
+
+          <div className="vertical-divider"></div>
+
+          <div className="control-group">
+            <button onClick={zoomOut} className="btn-icon small">-</button>
+            <span className="zoom-level">{Math.round(scale * 100)}%</span>
+            <button onClick={zoomIn} className="btn-icon small">+</button>
+          </div>
         </div>
 
-        <div className="control-divider"></div>
-
-        {/* Zoom */}
-        <div className="control-group zoom-group">
-          <button onClick={zoomOut} className="btn-icon" title="Zoom Out">-</button>
-          <span className="zoom-level">{Math.round(scale * 100)}%</span>
-          <button onClick={zoomIn} className="btn-icon" title="Zoom In">+</button>
-        </div>
-
-        <div className="control-divider"></div>
-
-        {/* Tools */}
-        <div className="control-group">
+        {/* Row 2: Tools (Lock & Fullscreen) */}
+        <div className="controls-row secondary-row">
            <button 
-             className={`btn-icon ${isScrollLocked ? 'active-tool' : ''}`}
+             className={`btn-tool ${isScrollLocked ? 'active' : ''}`}
              onClick={toggleScrollLock}
-             title={isScrollLocked ? "Unlock Scroll" : "Lock Scroll"}
            >
-             {isScrollLocked ? '🔒' : '🔓'}
+             <span className="tool-icon">{isScrollLocked ? '🔒' : '🔓'}</span>
+             <span className="tool-label">{isScrollLocked ? 'Unlock Scroll' : 'Lock Scroll'}</span>
            </button>
+           
+           <div className="vertical-divider"></div>
+
            <button 
-             className="btn-icon"
+             className="btn-tool"
              onClick={toggleFullscreen}
-             title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-             style={{ marginLeft: '8px' }}
            >
-             {isFullscreen ? '↙' : '↗'}
+             <span className="tool-icon">{isFullscreen ? '↙' : '↗'}</span>
+             <span className="tool-label">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
            </button>
         </div>
 

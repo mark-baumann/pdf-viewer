@@ -1,6 +1,6 @@
 :root {
   --bg-color: #f5f5f7;
-  --viewer-bg: #e5e5e5; /* Centralized viewer background color */
+  --viewer-bg: #e5e5e5;
   --card-bg: #ffffff;
   --text-primary: #1d1d1f;
   --text-secondary: #86868b;
@@ -172,58 +172,46 @@ body {
   color: var(--text-secondary);
 }
 
-/* Viewer */
+/* Viewer Container */
 .viewer-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  /* Use fixed variable for consistency */
   background-color: var(--viewer-bg);
   overflow: hidden; 
   position: relative;
 }
 
-/* Scroll Lock */
-.document-wrapper.scroll-locked {
-  overflow: hidden !important;
-}
-
-.viewer-controls {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* Removed viewer-header styles */
-
 .document-wrapper {
   flex: 1;
   overflow: auto;
   display: flex;
-  flex-direction: column; /* Vertical alignment */
+  flex-direction: column;
   align-items: center;
-  /* Centering logic */
   justify-content: flex-start; 
-  padding: 40px 40px 100px 40px; /* Equal top and bottom padding, more bottom for controls */
+  padding: 40px 40px 160px 40px; /* More bottom padding for 2-row controls */
   height: 100%;
-  background-color: var(--viewer-bg); /* Match container */
+  background-color: var(--viewer-bg);
 }
 
-/* React-PDF Specific Overrides */
+.document-wrapper.scroll-locked {
+  overflow: hidden !important;
+}
+
 .pdf-document {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Ensure it has space to breathe */
   min-height: min-content; 
 }
 
 .pdf-page canvas {
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   border-radius: 4px;
-  /* Background inside canvas area should also match or be white */
   background-color: white; 
 }
 
-/* Floating Controls */
+/* Floating Controls - Two Rows */
 .viewer-controls {
   position: fixed;
   bottom: 30px;
@@ -231,15 +219,16 @@ body {
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 10px 20px;
-  border-radius: 50px;
+  padding: 12px;
+  border-radius: 24px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.12);
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column; /* Stack rows */
+  gap: 8px;
   z-index: 20;
   border: 1px solid rgba(0,0,0,0.05);
-  white-space: nowrap;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  min-width: 300px;
 }
 
 .viewer-controls.hidden {
@@ -248,23 +237,43 @@ body {
   pointer-events: none;
 }
 
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.primary-row {
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.secondary-row {
+  justify-content: space-around;
+  padding-top: 4px;
+}
+
 .control-group {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.control-divider {
+.vertical-divider {
   width: 1px;
   height: 20px;
   background-color: #e0e0e0;
+  margin: 0 8px;
 }
 
+/* Buttons & Icons */
 .btn-icon {
-  width: 36px; /* Slightly larger targets */
+  width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid transparent; /* Cleaner look */
+  border: none;
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -279,11 +288,12 @@ body {
   background: rgba(0,0,0,0.05);
 }
 
-.btn-icon.active-tool {
-  background: var(--accent-color);
-  color: white;
+.btn-icon.small {
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  background: rgba(0,0,0,0.03);
 }
-
 
 .btn-nav {
   background: none;
@@ -292,19 +302,49 @@ body {
   font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
-  padding: 6px 10px;
+  padding: 4px 8px;
   border-radius: 6px;
 }
 
-.btn-nav:disabled {
-  color: #d1d1d6;
-  cursor: not-allowed;
+.btn-nav:hover {
+  background: rgba(0,0,0,0.05);
 }
 
-.btn-nav:not(:disabled):hover {
-  background: #f5f5f7;
+/* Tool Buttons (Lock / Fullscreen) */
+.btn-tool {
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: background 0.2s;
 }
 
+.btn-tool:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.btn-tool.active {
+  background: var(--accent-color);
+  color: white;
+}
+
+.tool-icon {
+  font-size: 18px;
+}
+
+.tool-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Text Info */
 .page-info, .zoom-level {
   font-variant-numeric: tabular-nums;
   font-size: 14px;
@@ -317,27 +357,18 @@ body {
   color: var(--text-secondary);
 }
 
-/* Landscape / Mobile specific fixes */
-@media (max-width: 600px) {
+/* Mobile Adjustments */
+@media (max-width: 480px) {
   .viewer-controls {
-    padding: 8px 16px;
-    gap: 8px;
+    width: 90%;
     bottom: 20px;
-    width: 95%; /* Use full width on small screens */
-    justify-content: space-between;
   }
   
-  .control-group {
-    gap: 4px;
+  .tool-label {
+    display: none; /* Hide labels on very small screens, show icons only */
   }
   
-  /* Hide specific text elements if tight */
-  .zoom-level {
-    display: none; 
-  }
-  
-  .btn-icon {
-    width: 32px;
-    height: 32px;
+  .btn-tool {
+    padding: 8px 16px; /* Larger touch targets */
   }
 }

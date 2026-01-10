@@ -1,5 +1,6 @@
 :root {
   --bg-color: #f5f5f7;
+  --viewer-bg: #e5e5e5; /* Centralized viewer background color */
   --card-bg: #ffffff;
   --text-primary: #1d1d1f;
   --text-secondary: #86868b;
@@ -176,9 +177,10 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #e5e5e5;
-  overflow: hidden; /* Prevent body scroll during swipe */
-  position: relative; /* Ensure children positioning works */
+  /* Use fixed variable for consistency */
+  background-color: var(--viewer-bg);
+  overflow: hidden; 
+  position: relative;
 }
 
 /* Scroll Lock */
@@ -201,7 +203,6 @@ body {
   border-bottom: 1px solid rgba(0,0,0,0.1);
   box-shadow: var(--shadow-sm);
   z-index: 10;
-  /* Fix: Make it absolute so it overlays the content */
   position: absolute;
   top: 0;
   left: 0;
@@ -238,7 +239,7 @@ body {
 .viewer-actions {
   width: 100px;
   display: flex;
-  justify-content: flex-end; /* Align icon to the right */
+  justify-content: flex-end;
 }
 
 .btn-icon-nav {
@@ -266,13 +267,13 @@ body {
   flex: 1;
   overflow: auto;
   display: flex;
-  justify-content: center;
-  /* Fix: Reduced padding since header is now absolute */
-  padding: 80px 40px 40px 40px; 
-  /* Make click area better */
-  min-height: 0; 
-  /* Ensure it takes full height */
+  flex-direction: column; /* Vertical alignment */
+  align-items: center;
+  /* Centering logic */
+  justify-content: flex-start; 
+  padding: 80px 40px 80px 40px; /* Equal top and bottom padding */
   height: 100%;
+  background-color: var(--viewer-bg); /* Match container */
 }
 
 /* React-PDF Specific Overrides */
@@ -280,12 +281,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Ensure it has space to breathe */
+  min-height: min-content; 
 }
 
 .pdf-page canvas {
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   border-radius: 4px;
-  margin-bottom: 20px;
+  /* Background inside canvas area should also match or be white */
+  background-color: white; 
 }
 
 /* Floating Controls */
@@ -308,7 +312,7 @@ body {
 
 .viewer-controls.hidden {
   opacity: 0;
-  transform: translate(-50%, 20px); /* Move down slightly */
+  transform: translate(-50%, 20px);
   pointer-events: none;
 }
 
@@ -374,4 +378,12 @@ body {
 .loading {
   margin-top: 100px;
   color: var(--text-secondary);
+}
+
+/* Landscape / Mobile specific fixes */
+@media (max-height: 500px) {
+  .document-wrapper {
+    padding-top: 70px;
+    padding-bottom: 70px;
+  }
 }

@@ -9,7 +9,6 @@ const PDFViewer: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const file = location.state?.file;
-  const fileName = location.state?.name || 'Document';
   
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -67,7 +66,7 @@ const PDFViewer: React.FC = () => {
     resetControlsTimer();
   }, [numPages]);
 
-  // Toggle Fullscreen (Standard API only, no fallback)
+  // Toggle Fullscreen
   const toggleFullscreen = () => {
     const elem = containerRef.current as any;
     const doc = document as any;
@@ -151,31 +150,7 @@ const PDFViewer: React.FC = () => {
       ref={containerRef}
       className="viewer-container"
     >
-      <div className={`viewer-header ${controlsVisible ? 'visible' : 'hidden'}`}>
-        <button className="btn-back" onClick={() => navigate('/')}>
-          ← Back
-        </button>
-        <div className="viewer-title">
-           {fileName}
-        </div>
-        <div className="viewer-actions">
-           <button 
-             className="btn-icon-nav"
-             onClick={toggleScrollLock}
-             title={isScrollLocked ? "Unlock Scroll" : "Lock Scroll"}
-             style={{ marginRight: '8px' }}
-           >
-             {isScrollLocked ? '🔒' : '🔓'}
-           </button>
-           <button 
-             className="btn-icon-nav"
-             onClick={toggleFullscreen}
-             title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-           >
-             {isFullscreen ? '↙' : '↗'}
-           </button>
-        </div>
-      </div>
+      {/* Header removed as requested */}
 
       <div 
         className={`document-wrapper ${isScrollLocked ? 'scroll-locked' : ''}`}
@@ -202,26 +177,14 @@ const PDFViewer: React.FC = () => {
         // Stop clicks on controls from toggling visibility
         onClick={(e) => { e.stopPropagation(); resetControlsTimer(); }}
       >
-        <div className="control-group">
-          <button 
-            onClick={zoomOut} 
-            className="btn-icon"
-            title="Zoom Out"
-          >
-            -
-          </button>
-          <span className="zoom-level">{Math.round(scale * 100)}%</span>
-          <button 
-            onClick={zoomIn} 
-            className="btn-icon"
-            title="Zoom In"
-          >
-            +
-          </button>
-        </div>
+        {/* Back Button */}
+        <button className="btn-icon" onClick={() => navigate('/')} title="Back">
+          ←
+        </button>
 
         <div className="control-divider"></div>
 
+        {/* Navigation */}
         <div className="control-group">
           <button
             type="button"
@@ -243,6 +206,37 @@ const PDFViewer: React.FC = () => {
             →
           </button>
         </div>
+
+        <div className="control-divider"></div>
+
+        {/* Zoom */}
+        <div className="control-group zoom-group">
+          <button onClick={zoomOut} className="btn-icon" title="Zoom Out">-</button>
+          <span className="zoom-level">{Math.round(scale * 100)}%</span>
+          <button onClick={zoomIn} className="btn-icon" title="Zoom In">+</button>
+        </div>
+
+        <div className="control-divider"></div>
+
+        {/* Tools */}
+        <div className="control-group">
+           <button 
+             className={`btn-icon ${isScrollLocked ? 'active-tool' : ''}`}
+             onClick={toggleScrollLock}
+             title={isScrollLocked ? "Unlock Scroll" : "Lock Scroll"}
+           >
+             {isScrollLocked ? '🔒' : '🔓'}
+           </button>
+           <button 
+             className="btn-icon"
+             onClick={toggleFullscreen}
+             title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+             style={{ marginLeft: '8px' }}
+           >
+             {isFullscreen ? '↙' : '↗'}
+           </button>
+        </div>
+
       </div>
     </div>
   );

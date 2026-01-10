@@ -33,13 +33,17 @@ const PDFViewer: React.FC = () => {
     }
   }, [file, navigate]);
 
-  // Handle Fullscreen Change Events
+  // Handle Fullscreen Change Events (Native API)
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange); // iOS/Safari
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
   }, []);
 
   // Helper to save zoom
@@ -63,14 +67,32 @@ const PDFViewer: React.FC = () => {
     resetControlsTimer();
   }, [numPages]);
 
-  // Toggle Fullscreen
+  // Toggle Fullscreen - Enhanced for iOS
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
+    const elem = containerRef.current as any;
+    const doc = document as any;
+
+    if (!isFullscreen) {
+      // Try native fullscreen first
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch((err: any) => {
+          console.warn('Native fullscreen failed, using CSS fallback', err);
+          setIsFullscreen(true); // Fallback to CSS fullscreen
+        });
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen(); // Safari/iOS (if supported)
+      } else {
+        // Fallback for iOS which often doesn't support element fullscreen
+        setIsFullscreen(true);
+      }
     } else {
-      document.exitFullscreen();
+      if (doc.exitFullscreen) {
+        doc.exitFullscreen().catch(() => setIsFullscreen(false));
+      } else if (doc.webkitExitFullscreen) {
+        doc.webkitExitFullscreen();
+      } else {
+        setIsFullscreen(false);
+      }
     }
     resetControlsTimer();
   };
@@ -153,7 +175,7 @@ const PDFViewer: React.FC = () => {
   return (
     <div 
       ref={containerRef}
-      className="viewer-container"
+      className={`viewer-container ${isFullscreen ? 'fullscreen-fallback' : ''}`}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >

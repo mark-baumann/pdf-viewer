@@ -181,6 +181,20 @@ body {
   position: relative; /* Ensure children positioning works */
 }
 
+/* iOS Fullscreen Fallback */
+.viewer-container.fullscreen-fallback {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: #e5e5e5;
+  height: 100%;
+  width: 100%;
+}
+
+
 .viewer-header, .viewer-controls {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }

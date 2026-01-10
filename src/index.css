@@ -339,23 +339,37 @@ body {
 /* Mobile Adjustments */
 @media (max-width: 600px) {
   .viewer-controls {
-    padding: 8px 16px;
+    padding: 8px 12px;
   }
 
   .toolbar {
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .toolbar-section.left {
+    order: 1;
   }
   
   .toolbar-section.right {
-    gap: 4px;
+    order: 2;
+    gap: 8px;
   }
   
   .toolbar-section.center {
-    gap: 12px;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 16px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    margin-top: 4px;
   }
   
   .page-info, .zoom-level {
-    font-size: 12px;
+    font-size: 13px;
+    min-width: 30px;
   }
 }
 

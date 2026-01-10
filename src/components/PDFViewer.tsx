@@ -5,6 +5,17 @@ import { Document, Page, pdfjs } from 'react-pdf';
 // Configure the worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
+// Icons
+const IconArrowLeft = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>;
+const IconChevronLeft = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>;
+const IconChevronRight = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>;
+const IconMinus = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+const IconPlus = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+const IconLock = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+const IconUnlock = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>;
+const IconMaximize = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>;
+const IconMinimize = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>;
+
 const PDFViewer: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -112,7 +123,7 @@ const PDFViewer: React.FC = () => {
           {/* Left: Back */}
           <div className="toolbar-section left">
             <button className="btn-icon" onClick={() => navigate('/')} title="Back">
-              ←
+              <IconArrowLeft />
             </button>
           </div>
 
@@ -124,8 +135,9 @@ const PDFViewer: React.FC = () => {
                 disabled={pageNumber <= 1}
                 onClick={() => changePage(-1)}
                 className="btn-nav"
+                title="Previous Page"
               >
-                ←
+                <IconChevronLeft />
               </button>
               <span className="page-info">
                 {pageNumber} / {numPages || '--'}
@@ -135,17 +147,18 @@ const PDFViewer: React.FC = () => {
                 disabled={pageNumber >= (numPages || 0)}
                 onClick={() => changePage(1)}
                 className="btn-nav"
+                title="Next Page"
               >
-                →
+                <IconChevronRight />
               </button>
             </div>
 
             <div className="vertical-divider"></div>
 
             <div className="control-group">
-              <button onClick={zoomOut} className="btn-icon small">-</button>
+              <button onClick={zoomOut} className="btn-icon small" title="Zoom Out"><IconMinus /></button>
               <span className="zoom-level">{Math.round(scale * 100)}%</span>
-              <button onClick={zoomIn} className="btn-icon small">+</button>
+              <button onClick={zoomIn} className="btn-icon small" title="Zoom In"><IconPlus /></button>
             </div>
           </div>
 
@@ -156,7 +169,7 @@ const PDFViewer: React.FC = () => {
                onClick={toggleScrollLock}
                title={isScrollLocked ? 'Unlock Scroll' : 'Lock Scroll'}
              >
-               {isScrollLocked ? '🔒' : '🔓'}
+               {isScrollLocked ? <IconLock /> : <IconUnlock />}
              </button>
              
              <button 
@@ -164,7 +177,7 @@ const PDFViewer: React.FC = () => {
                onClick={toggleFullscreen}
                title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
              >
-               {isFullscreen ? '↙️' : '↗️'}
+               {isFullscreen ? <IconMinimize /> : <IconMaximize />}
              </button>
           </div>
         </div>
